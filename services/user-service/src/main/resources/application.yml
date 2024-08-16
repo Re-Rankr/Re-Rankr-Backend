@@ -3,6 +3,23 @@ spring:
     name: user-service
   config:
     import: optional:configserver:http://localhost:8081
+  datasource:
+    url: jdbc:postgresql://localhost:5432/Re-RankrDb
+    username: admin
+    password: 123
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            client-id: Ov23liTX5X8148dZirii
+            client-secret:
 
 server:
   port: 8082
