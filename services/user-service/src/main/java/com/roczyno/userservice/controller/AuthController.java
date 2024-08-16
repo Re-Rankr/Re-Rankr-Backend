@@ -34,8 +34,8 @@ public class AuthController {
     }
 
     @GetMapping("/validate")
-    public ResponseEntity<Map<String,Object>> verifyToken (@RequestHeader("Authorization") String token) {
-        return new ResponseEntity<>(jwtService.extractToken(token), HttpStatus.OK);
+    public ResponseEntity<UserDto> verifyToken (@RequestHeader("Authorization") String token) {
+        return new ResponseEntity<>(authService.validateToken(token), HttpStatus.OK);
     }
 
 }

@@ -55,6 +55,15 @@ public class AuthService {
         return userRepository.findByEmail(email).orElseThrow(
                 ()->new RuntimeException("User Does Not Exist"));
     }
+
+    public UserDto validateToken (String token) {
+        Map<String , Object> claims = jwtService.extractToken(token);
+        return UserDto.builder()
+                .id(claims.get("id").toString())
+                .email(claims.get("sub").toString())
+                .build();
+    }
+
     public void verifyOTP(VerificationRequest request) {}
     public void resetPassword () {}
 
