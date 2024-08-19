@@ -3,7 +3,9 @@ package com.roczyno.userservice.controller;
 import com.roczyno.userservice.dto.AuthRequest;
 import com.roczyno.userservice.dto.UserDto;
 import com.roczyno.userservice.service.AuthService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
     private final AuthService authService;
     @PostMapping("/signup")
-    public UserDto signUp (@RequestBody AuthRequest request) {
+    public UserDto signUp (@RequestBody @Valid AuthRequest request) {
         return authService.signUp(request);
     }
 
@@ -30,7 +32,7 @@ public class AuthController {
     }
 
     @GetMapping("/validate")
-    public ResponseEntity<UserDto> verifyToken (@RequestHeader("Authorization") String token) {
+    public ResponseEntity<UserDto> verifyToken (@RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         return new ResponseEntity<>(authService.validateToken(token), HttpStatus.OK);
     }
 

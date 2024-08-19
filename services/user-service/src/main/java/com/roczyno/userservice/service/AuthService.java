@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +35,7 @@ public class AuthService {
                 .build();
         User createdUser = userRepository.save(user);
         return UserDto.builder()
-                .id(createdUser.getId().toString())
+                .id(createdUser.getId())
                 .email(createdUser.getEmail())
                 .username(createdUser.getUsername())
                 .build();
@@ -59,7 +60,7 @@ public class AuthService {
     public UserDto validateToken (String token) {
         Map<String , Object> claims = jwtService.extractToken(token);
         return UserDto.builder()
-                .id(claims.get("id").toString())
+                .id(UUID.fromString(claims.get("id").toString()))
                 .email(claims.get("sub").toString())
                 .build();
     }

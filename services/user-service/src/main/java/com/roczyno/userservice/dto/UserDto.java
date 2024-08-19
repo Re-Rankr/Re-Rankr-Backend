@@ -2,9 +2,11 @@ package com.roczyno.userservice.dto;
 
 import lombok.Builder;
 
+import java.util.UUID;
+
 @Builder
 public record UserDto(
-        String id,
+        UUID id,
         String username,
         String email
 ) {
