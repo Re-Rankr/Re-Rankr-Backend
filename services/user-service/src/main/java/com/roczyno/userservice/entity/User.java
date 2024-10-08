@@ -31,4 +31,9 @@ public class User {
     private String password;
     @Column(unique = true)
     private String username;
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean isVerified = false;
+    @Column(nullable = false)
+    private boolean isEnabled = false;
 }

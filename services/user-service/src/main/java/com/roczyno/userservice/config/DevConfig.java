@@ -1,24 +1,24 @@
 package com.roczyno.userservice.config;
 
-import com.roczyno.userservice.dto.AuthRequest;
 import com.roczyno.userservice.entity.User;
 import com.roczyno.userservice.repository.UserRepository;
-import com.roczyno.userservice.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 @RequiredArgsConstructor
 public class DevConfig {
-    private final AuthService authService;
+    private final PasswordEncoder encoder;
+    private final UserRepository userRepository;
     @Bean
     CommandLineRunner commandLineRunner() {
         return args -> {
-            authService.signUp(
-                    AuthRequest.builder().email("admin@rankr.com").username("admin").password("admin")
-                    .build());
+            userRepository.save(
+              User.builder().email("admin@rankr.com").username("admin").password(encoder.encode("admin")).build()
+            );
         };
     }
 }

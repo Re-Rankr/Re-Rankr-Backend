@@ -33,10 +33,6 @@ public class OTP {
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private User user;
-
-    @Column
-    private LocalDateTime createdAt;
-
     @Column
     private LocalDateTime expiresAt;
 }

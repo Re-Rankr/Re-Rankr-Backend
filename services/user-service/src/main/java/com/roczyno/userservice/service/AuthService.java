@@ -1,10 +1,16 @@
 package com.roczyno.userservice.service;
 
 import com.roczyno.userservice.dto.AuthRequest;
+import com.roczyno.userservice.dto.ResetPasswordRequest;
 import com.roczyno.userservice.dto.UserDto;
 import com.roczyno.userservice.dto.VerificationRequest;
+import com.roczyno.userservice.entity.OTP;
+import com.roczyno.userservice.enums.OtpType;
 import com.roczyno.userservice.repository.UserRepository;
 import com.roczyno.userservice.entity.User;
+import com.roczyno.userservice.service.OtpService.OtpService;
+import com.roczyno.userservice.service.mailservice.MailService;
+import com.roczyno.userservice.utils.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,6 +28,9 @@ public class AuthService {
     private final PasswordEncoder encoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final OtpService otpService;
+    private final UserMapper userMapper;
+    private final MailService mailService;
 
     public UserDto signUp (AuthRequest request) {
         Optional<User> check = userRepository.findByEmail(request.email());
@@ -34,6 +43,9 @@ public class AuthService {
                 .password(encoder.encode(request.password()))
                 .build();
         User createdUser = userRepository.save(user);
+        mailService.sendVerificationMail(
+                otpService.generateOTP(OtpType.VERIFY,user,true)
+        );
         return UserDto.builder()
                 .id(createdUser.getId())
                 .email(createdUser.getEmail())
@@ -65,8 +77,25 @@ public class AuthService {
                 .build();
     }
 
-    public void verifyOTP(VerificationRequest request) {}
-    public void resetPassword () {}
-
-
+    public UserDto verifyOTP(VerificationRequest request) {
+        User user = otpService.verifyOTP(request.value(), request.email());
+        user.setVerified(true);
+        userRepository.save(user);
+        return userMapper.mapToUserDto(user);
+    }
+    public UserDto resetPassword (UUID id,ResetPasswordRequest request) {
+        if(request.otp() == null) {
+            OTP otp = otpService.generateOTP(
+                    OtpType.RESET,
+                    userRepository.findByEmail(request.email()).orElseThrow(() ->new RuntimeException("User exists")),
+                    true
+                    );
+            mailService.sendResetMail(otp);
+            return null;
+        }
+        User user = otpService.verifyOTP(request.otp(),id);
+        user.setPassword(encoder.encode(request.newPassword()));
+        userRepository.save(user);
+        return null;
+    }
 }
